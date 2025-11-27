@@ -47,7 +47,7 @@ class SettingsDialog : public QDialog
 
     private:
         void languageChanged(int index);
-        void logToFileChanged(int i);
+        void logToFileChanged(bool checked);
         void browseLogClicked();
 
         std::unique_ptr<Ui::SettingsDialog> ui_;
