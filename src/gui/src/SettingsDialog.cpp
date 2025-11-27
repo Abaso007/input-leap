@@ -64,7 +64,13 @@ SettingsDialog::SettingsDialog(QWidget* parent, AppConfig& config) :
     ui_->m_pComboElevate->hide();
 #endif
 
-    connect(ui_->m_pCheckBoxLogToFile, &QCheckBox::stateChanged, this, &SettingsDialog::logToFileChanged);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(ui_->m_pCheckBoxLogToFile, &QCheckBox::checkStateChanged, this,
+            [this](Qt::CheckState state) { logToFileChanged(state == Qt::Checked); });
+#else
+    connect(ui_->m_pCheckBoxLogToFile, &QCheckBox::stateChanged, this,
+            [this](int state) { logToFileChanged(state == 2); });
+#endif
     connect(ui_->m_pButtonBrowseLog, &QPushButton::clicked, this, &SettingsDialog::browseLogClicked);
     connect(ui_->m_pComboLanguage, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &SettingsDialog::languageChanged);
 }
@@ -120,9 +126,8 @@ void SettingsDialog::changeEvent(QEvent* event)
     }
 }
 
-void SettingsDialog::logToFileChanged(int i)
+void SettingsDialog::logToFileChanged(bool checked)
 {
-    bool checked = i == 2;
 
     ui_->m_pLineEditLogFilename->setEnabled(checked);
     ui_->m_pButtonBrowseLog->setEnabled(checked);
